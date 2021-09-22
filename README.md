@@ -1,6 +1,9 @@
 # Python Snake
 A simple snake game made in Python and Pygame
 
+### Why did I make it?
+Awesome question - I wanted a simple thing as an introduction to Pygame for my other (much more complex) project, so I felt like a snake game would do the job.
+
 ## How to play it:
 You don't have to do much in order to run this game, just install the pygame package (`pip install pygame`) and you are set to go.
 
