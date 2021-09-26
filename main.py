@@ -16,7 +16,7 @@ def main():
     gameDisplay = pygame.display.set_mode((width, height))
     pygame.display.set_caption("Snake")
 
-    icon = pygame.image.load("icon.png")
+    icon = pygame.image.load("./assets/icon.png")
     pygame.display.set_icon(icon)
 
     clock = pygame.time.Clock()
@@ -24,9 +24,9 @@ def main():
     snakeSize = 10
     snakeSpeed = 15
 
-    mainMessageFont = pygame.font.SysFont("calibri", 30)
-    secondaryMessageFont = pygame.font.SysFont("calibri", 15)
-    scoreFont = pygame.font.SysFont("calibri", 20)
+    mainMessageFont = pygame.font.Font("./assets/calibri-regular.ttf", 30)
+    secondaryMessageFont = pygame.font.Font("./assets/calibri-regular.ttf", 15)
+    scoreFont = pygame.font.Font("./assets/calibri-regular.ttf", 20)
 
     runGame(gameDisplay, clock, width, height, snakeSize, snakeSpeed, dark, orange, white, green, red, scoreFont, mainMessageFont, secondaryMessageFont)
 
