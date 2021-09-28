@@ -1,9 +1,11 @@
 import pygame
+import cv2
 import random
 import time
 
 def main():
     pygame.init()
+    pygame.mixer.init()
     
     white = (255, 255, 255)
     dark = (24, 24, 24)
@@ -51,8 +53,50 @@ def runGame(gameDisplay, clock, width, height, snakeSize, snakeSpeed, fillColour
     targetY = round(random.randrange(0, height-snakeSize)/10.0)*10.0
     escapePressTime = 0
     escapePressTimeInterval = 0.2
+    playingVideo = False
+    videoSuccess = False
+    videoFPS = 25
 
     while not gameClose:
+        if playingVideo:
+            pygame.mixer.music.load("./assets/sound.mp3")
+            pygame.mixer.music.set_volume(1.0)
+            cap = cv2.VideoCapture('./assets/video.mp4')
+            videoSuccess, img = cap.read()
+            shape = img.shape[1::-1]
+            gameDisplay = pygame.display.set_mode(shape)
+            manualGameQuit = False
+            pygame.mixer.music.play()
+            startTime = time.time()
+            timeBeforeClose = 15 # in seconds
+            videoLength = 211 # in seconds
+            while videoSuccess:
+                videoSuccess, img = cap.read()
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT and time.time() - startTime > timeBeforeClose:
+                        pygame.mixer.music.stop()
+                        gameClose = True
+                        gameOver = False
+                        videoSuccess = False
+                        manualGameQuit = True
+                    if event.type == pygame.KEYDOWN:
+                        key = event.key
+                        if key == pygame.K_RCTRL and time.time() - startTime > timeBeforeClose:
+                            playingVideo = False    
+                            videoSuccess = False
+                            gameDisplay = pygame.display.set_mode((width, height))
+                            pygame.mixer.music.stop()
+                            runGame(gameDisplay, clock, width, height, snakeSize, snakeSpeed, fillColour, targetColour, snakeColour, scoreColour, gameOverColour, scoreFont, mainMessageFont, secondaryMessageFont)
+                if time.time() - startTime >= videoLength:
+                    videoSuccess = False
+                gameDisplay.blit(pygame.image.frombuffer(img.tobytes(), shape, "BGR"), (0, 0))
+                pygame.display.update()
+                clock.tick(videoFPS)
+            pygame.mixer.music.stop()
+            playingVideo = False
+            gameDisplay = pygame.display.set_mode((width, height))
+            if not manualGameQuit:
+                runGame(gameDisplay, clock, width, height, snakeSize, snakeSpeed, fillColour, targetColour, snakeColour, scoreColour, gameOverColour, scoreFont, mainMessageFont, secondaryMessageFont)
         while gameOver:
             gameDisplay.fill(fillColour)
             gameOverMessage = mainMessageFont.render("Game Over!", True, gameOverColour)
@@ -90,6 +134,8 @@ def runGame(gameDisplay, clock, width, height, snakeSize, snakeSpeed, fillColour
                         gameClose = True
                     else:
                         escapePressTime = time.time()
+                if key == pygame.K_LCTRL:
+                    playingVideo = True
                 if (key == pygame.K_LEFT or key == pygame.K_a) and xSpeed == 0:
                     xSpeed = -snakeSize
                     ySpeed = 0
