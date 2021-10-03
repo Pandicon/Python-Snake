@@ -2,6 +2,7 @@ import pygame
 import cv2
 import random
 import time
+import numpy
 
 def main():
     pygame.init()
@@ -69,7 +70,6 @@ def runGame(gameDisplay, clock, width, height, snakeSize, snakeSpeed, fillColour
             pygame.mixer.music.play()
             startTime = time.time()
             timeBeforeClose = 15 # in seconds
-            videoLength = 211 # in seconds
             while videoSuccess:
                 videoSuccess, img = cap.read()
                 for event in pygame.event.get():
@@ -87,9 +87,10 @@ def runGame(gameDisplay, clock, width, height, snakeSize, snakeSpeed, fillColour
                             gameDisplay = pygame.display.set_mode((width, height))
                             pygame.mixer.music.stop()
                             runGame(gameDisplay, clock, width, height, snakeSize, snakeSpeed, fillColour, targetColour, snakeColour, scoreColour, gameOverColour, scoreFont, mainMessageFont, secondaryMessageFont)
-                if time.time() - startTime >= videoLength:
+                if type(img) == numpy.ndarray:
+                    gameDisplay.blit(pygame.image.frombuffer(img.tobytes(), shape, "BGR"), (0, 0))
+                else:
                     videoSuccess = False
-                gameDisplay.blit(pygame.image.frombuffer(img.tobytes(), shape, "BGR"), (0, 0))
                 pygame.display.update()
                 clock.tick(videoFPS)
             pygame.mixer.music.stop()
